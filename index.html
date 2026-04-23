@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0f14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Tracker Keeper — Personal task, habit stack, and module tracker" />
+  <title>Tracker Keeper</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- App Shell -->
+  <div id="app">
+
+    <!-- Top Bar -->
+    <header id="topbar">
+      <div id="topbar-left">
+        <button id="menu-btn" class="icon-btn" aria-label="Menu">
+          <span class="icon">☰</span>
+        </button>
+        <div id="app-title">
+          <span class="logo-flame">🔥</span>
+          <span class="logo-text">Tracker Keeper</span>
+        </div>
+      </div>
+      <div id="topbar-right">
+        <div id="view-toggle" title="Toggle view">
+          <button class="vtog-btn active" data-mode="module" id="vtog-mod">Mod</button>
+          <button class="vtog-btn" data-mode="granular" id="vtog-task">Task</button>
+        </div>
+        <button id="add-btn" class="icon-btn accent-btn" aria-label="Add new">
+          <span class="icon">＋</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Side Drawer -->
+    <div id="drawer-overlay" class="hidden"></div>
+    <nav id="drawer" class="hidden">
+      <div id="drawer-header">
+        <span class="logo-flame">🔥</span>
+        <span class="logo-text">Matts Tasks</span>
+        <button id="drawer-close" class="icon-btn">✕</button>
+      </div>
+      <ul id="drawer-nav">
+        <li><button class="nav-item active" data-page="dashboard">📋 Dashboard</button></li>
+        <li><button class="nav-item" data-page="modules">📦 Modules</button></li>
+        <li><button class="nav-item" data-page="history">📈 History</button></li>
+        <li><button class="nav-item" data-page="settings">⚙️ Settings</button></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+
+      <!-- DASHBOARD PAGE -->
+      <section id="page-dashboard" class="page active">
+        <div id="dashboard-content">
+          <!-- Dynamically rendered -->
+        </div>
+      </section>
+
+      <!-- MODULES PAGE -->
+      <section id="page-modules" class="page">
+        <div class="page-header">
+          <h2>All Modules</h2>
+          <button class="accent-btn" id="new-module-btn">+ New Module</button>
+        </div>
+        <div id="modules-list">
+          <!-- Dynamically rendered -->
+        </div>
+      </section>
+
+      <!-- HISTORY PAGE -->
+      <section id="page-history" class="page">
+        <div class="page-header">
+          <h2>History</h2>
+        </div>
+        <div id="history-filter">
+          <select id="history-module-select">
+            <option value="">All Modules</option>
+          </select>
+        </div>
+        <div id="history-analysis">
+          <!-- Analysis cards rendered here -->
+        </div>
+        <div class="dash-section-header" style="margin-top:16px">
+          <span class="dash-section-icon">📋</span>
+          <span class="dash-section-label">Run Log</span>
+        </div>
+        <div id="history-run-log">
+          <!-- Run records rendered here -->
+        </div>
+      </section>
+
+      <!-- SETTINGS PAGE -->
+      <section id="page-settings" class="page">
+        <div class="page-header">
+          <h2>Settings</h2>
+        </div>
+        <div id="settings-content">
+          <div class="settings-group">
+            <h3>Data Management</h3>
+            <button class="secondary-btn" id="export-btn">Export Data (JSON)</button>
+            <button class="secondary-btn" id="import-btn">Import Data (JSON)</button>
+            <input type="file" id="import-file" accept=".json" class="hidden" />
+            <button class="danger-btn" id="clear-btn">Clear All Data</button>
+          </div>
+          <div class="settings-group">
+            <h3>History Management</h3>
+            <p class="settings-info" style="margin-bottom:10px">Delete run records to fix bad data or free up space.</p>
+            <select id="delete-history-module-select" style="width:100%;margin-bottom:8px">
+              <option value="">All Modules</option>
+            </select>
+            <button class="danger-btn" id="delete-history-btn">Delete History</button>
+          </div>
+          <div class="settings-group">
+            <h3>About</h3>
+            <p class="settings-info">Tracker Keeper v1.1<br>Your personal habit &amp; task tracker.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav id="bottom-nav">
+      <button class="bottom-nav-item active" data-page="dashboard">
+        <span class="bnav-icon">📋</span>
+        <span class="bnav-label">Dashboard</span>
+      </button>
+      <button class="bottom-nav-item" data-page="modules">
+        <span class="bnav-icon">📦</span>
+        <span class="bnav-label">Modules</span>
+      </button>
+      <button class="bottom-nav-item" data-page="history">
+        <span class="bnav-icon">📈</span>
+        <span class="bnav-label">History</span>
+      </button>
+      <button class="bottom-nav-item" data-page="settings">
+        <span class="bnav-icon">⚙️</span>
+        <span class="bnav-label">Settings</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODALS -->
+  <!-- ======================================================= -->
+
+  <!-- Module Detail Modal -->
+  <div id="modal-module-detail" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-full">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">✕</button>
+        <h2 id="module-detail-title">Module</h2>
+        <button class="icon-btn" id="module-detail-edit-btn">✏️</button>
+      </div>
+      <div id="module-detail-meta" class="module-meta-bar"></div>
+      <div id="module-detail-body" class="modal-scroll-body">
+        <!-- Stacks and tasks rendered here -->
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" id="add-stack-btn">+ Add Stack</button>
+        <button class="accent-btn" id="add-task-to-module-btn">+ Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Module Modal -->
+  <div id="modal-edit-module" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-sheet">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">✕</button>
+        <h2 id="edit-module-title">New Module</h2>
+        <button class="icon-btn accent-text" id="save-module-btn">Save</button>
+      </div>
+      <div class="modal-scroll-body">
+        <div class="form-group">
+          <label>Module Name</label>
+          <input type="text" id="mod-name" placeholder="e.g. Sunday Chores" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="mod-desc" placeholder="Optional description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Colour Tag</label>
+          <div id="colour-picker" class="colour-picker-row"></div>
+        </div>
+        <div class="form-group">
+          <label>Frequency</label>
+          <select id="mod-freq">
+            <option value="once">One-time</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Bi-weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="form-group" id="mod-weekday-group" style="display:none">
+          <label>Day of Week</label>
+          <div class="weekday-row" id="mod-weekday-row">
+            <button class="weekday-btn" data-day="0">Sun</button>
+            <button class="weekday-btn" data-day="1">Mon</button>
+            <button class="weekday-btn" data-day="2">Tue</button>
+            <button class="weekday-btn" data-day="3">Wed</button>
+            <button class="weekday-btn" data-day="4">Thu</button>
+            <button class="weekday-btn" data-day="5">Fri</button>
+            <button class="weekday-btn" data-day="6">Sat</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <div class="time-toggle-row">
+            <button class="time-seg-btn active" id="mod-allday-btn" type="button">All Day</button>
+            <button class="time-seg-btn" id="mod-starttime-btn" type="button">Start Time</button>
+          </div>
+          <div id="mod-time-input-wrap" style="display:none;margin-top:10px">
+            <input type="time" id="mod-start-time" />
+          </div>
+        </div>
+        <div class="form-group" id="mod-date-group">
+          <label>Start Date</label>
+          <input type="date" id="mod-start-date" />
+        </div>
+        <div class="form-group">
+          <label>Auto-close (days after date, 0 = end of day)</label>
+          <input type="number" id="mod-autoclose" min="0" max="30" value="0" />
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <label class="toggle-row">
+            <input type="checkbox" id="mod-active" checked />
+            <span class="toggle-label" id="mod-active-label">Active (repeating)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Stack Modal -->
+  <div id="modal-edit-stack" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-sheet">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">✕</button>
+        <h2 id="edit-stack-title">New Stack</h2>
+        <button class="icon-btn accent-text" id="save-stack-btn">Save</button>
+      </div>
+      <div class="modal-scroll-body">
+        <div class="form-group">
+          <label>Stack Name</label>
+          <input type="text" id="stack-name" placeholder="e.g. Kitchen Routine" />
+        </div>
+        <div class="form-group" id="stack-rank-group">
+          <label>Order/Rank in Module</label>
+          <input type="number" id="stack-rank" min="1" value="1" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Task Modal -->
+  <div id="modal-edit-task" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-sheet">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">✕</button>
+        <h2 id="edit-task-title">New Task</h2>
+        <button class="icon-btn accent-text" id="save-task-btn">Save</button>
+      </div>
+      <div class="modal-scroll-body">
+        <div class="form-group">
+          <label>Task Name</label>
+          <input type="text" id="task-name" placeholder="e.g. Take out garbage" />
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="task-type">
+            <option value="yesno">Yes / No</option>
+            <option value="measure">Measure (quantity)</option>
+          </select>
+        </div>
+        <div class="form-group" id="task-measure-label-group" style="display:none">
+          <label>Measure Label (optional)</label>
+          <input type="text" id="task-measure-label" placeholder="e.g. km, glasses, reps" />
+        </div>
+        <div class="form-group" id="task-goal-group" style="display:none">
+          <label>Daily Goal (optional)</label>
+          <div class="time-toggle-row">
+            <button class="time-seg-btn active" id="task-nogoal-btn" type="button">No Goal</button>
+            <button class="time-seg-btn" id="task-hasgoal-btn" type="button">Set Goal</button>
+          </div>
+          <div id="task-goal-wrap" style="display:none;margin-top:10px;display:flex;align-items:center;gap:8px">
+            <input type="number" id="task-goal-amount" step="0.1" placeholder="Goal amount" style="flex:1" />
+            <span id="task-goal-unit-label" style="color:var(--text-muted);font-size:13px;min-width:30px"></span>
+          </div>
+        </div>
+        <div class="form-group" id="task-stack-group">
+          <label>Parent Stack (optional)</label>
+          <select id="task-stack">
+            <option value="">— No Stack (standalone task) —</option>
+          </select>
+        </div>
+        <div class="form-group" id="task-rank-group">
+          <label>Order/Rank</label>
+          <input type="number" id="task-rank" min="1" value="1" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Add Floating (for standalone tasks) -->
+  <div id="modal-quick-add" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-sheet">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">✕</button>
+        <h2>Quick Add</h2>
+      </div>
+      <div class="modal-scroll-body">
+        <div class="quick-add-options">
+          <button class="quick-add-card" id="qa-module">
+            <span class="qa-icon">📦</span>
+            <span class="qa-label">New Module</span>
+            <span class="qa-sub">with stacks & tasks</span>
+          </button>
+          <button class="quick-add-card" id="qa-task">
+            <span class="qa-icon">✅</span>
+            <span class="qa-label">Standalone Task</span>
+            <span class="qa-sub">not part of a module</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div id="modal-confirm" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-dialog">
+      <h3 id="confirm-title">Are you sure?</h3>
+      <p id="confirm-message"></p>
+      <div class="dialog-actions">
+        <button class="secondary-btn" id="confirm-cancel">Cancel</button>
+        <button class="danger-btn" id="confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Measure Input Modal -->
+  <div id="modal-measure" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-dialog">
+      <h3 id="measure-title">Enter Measurement</h3>
+      <div class="form-group">
+        <input type="number" id="measure-input" step="0.1" placeholder="0.0" />
+        <span id="measure-unit-label" class="measure-unit"></span>
+      </div>
+      <div class="dialog-actions">
+        <button class="secondary-btn modal-close">Cancel</button>
+        <button class="accent-btn" id="measure-save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/scheduler.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
