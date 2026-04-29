@@ -1,5 +1,5 @@
 /**
- * app.js Î“Ã‡Ã¶ Main app bootstrap and global refresh coordinator
+ * app.js — Main app bootstrap and global refresh coordinator
  */
 
 'use strict';
@@ -38,7 +38,7 @@ const App = (() => {
     const modules = DB.getModules().sort((a, b) => a.name.localeCompare(b.name));
 
     if (!modules.length) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">â‰¡Æ’Ã´Âª</div><p>No modules yet.<br>Tap + to create your first one!</p></div>';
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128234;</div><p>No modules yet.<br>Tap + to create your first one!</p></div>';
       return;
     }
 
@@ -52,7 +52,7 @@ const App = (() => {
         <div class="all-module-row-accent" style="background:${mod.colour}"></div>
         <div class="all-module-row-info">
           <div class="all-module-row-name">${UI.escHtml(mod.name)}</div>
-          <div class="all-module-row-meta">${Scheduler.freqLabel(mod)} â”¬â•– ${stacks.length} stack${stacks.length !== 1 ? 's' : ''} â”¬â•– ${stats.total} task${stats.total !== 1 ? 's' : ''}</div>
+          <div class="all-module-row-meta">${Scheduler.freqLabel(mod)} &middot; ${stacks.length} stack${stacks.length !== 1 ? 's' : ''} &middot; ${stats.total} task${stats.total !== 1 ? 's' : ''}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           ${!mod.active ? '<span style="font-size:10px;padding:2px 8px;background:var(--rose-dim);color:var(--rose);border-radius:999px;">Stopped</span>' : ''}
@@ -74,7 +74,7 @@ const App = (() => {
     // Wire up modals
     Modals.init();
 
-    // Navigation â€” drawer
+    // Navigation — drawer
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         UI.navigateTo(btn.dataset.page);
@@ -86,7 +86,15 @@ const App = (() => {
     document.getElementById('menu-btn').addEventListener('click', UI.openDrawer);
     document.getElementById('drawer-close').addEventListener('click', UI.closeDrawer);
     document.getElementById('drawer-overlay').addEventListener('click', UI.closeDrawer);
-    document.getElementById('settings-btn').addEventListener('click', () => UI.navigateTo('settings'));
+
+    // Settings button (top bar icon) — toggle: if already on settings, go to dashboard
+    document.getElementById('settings-btn').addEventListener('click', () => {
+      if (UI.state.currentPage === 'settings') {
+        UI.navigateTo('dashboard');
+      } else {
+        UI.navigateTo('settings');
+      }
+    });
 
     // View mode segmented toggle
     document.querySelectorAll('.vtog-btn').forEach(btn => {
@@ -126,7 +134,7 @@ const App = (() => {
         if (!ok) return;
         const success = DB.importData(ev.target.result);
         if (success) { UI.toast('Data imported!'); refreshAll(); }
-        else UI.toast('Import failed Î“Ã‡Ã¶ invalid file');
+        else UI.toast('Import failed — invalid file');
       };
       reader.readAsText(file);
       e.target.value = '';
@@ -187,4 +195,3 @@ const App = (() => {
 
 // Boot
 document.addEventListener('DOMContentLoaded', App.init);
-

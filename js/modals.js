@@ -1,5 +1,5 @@
-﻿/**
- * modals.js Î“Ã‡Ã¶ All modal open/close/save logic
+/**
+ * modals.js — All modal open/close/save logic
  * Module editor, Stack editor, Task editor, Module detail view, Measure input
  */
 
@@ -21,7 +21,7 @@ const Modals = (() => {
   const openModal  = (id) => document.getElementById(id).classList.remove('hidden');
   const closeModal = (id) => document.getElementById(id).classList.add('hidden');
 
-  // Close on backdrop click Î“Ã‡Ã¶ set up once per modal
+  // Close on backdrop click — set up once per modal
   const bindBackdropClose = (modalId) => {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -135,10 +135,10 @@ const Modals = (() => {
       <span class="meta-chip">${Scheduler.freqLabel(mod)}</span>
       <span class="meta-chip" style="color:${UI.pctColor(stats.pct)}">${stats.done}/${stats.total} done</span>
       ${mod.autoclose === 0 ? '<span class="meta-chip">Closes EOD</span>' : `<span class="meta-chip">Auto-close +${mod.autoclose}d</span>`}
-      ${!mod.active ? '<span class="meta-chip" style="color:var(--rose)">Î“Ã…â•£ Stopped</span>' : ''}
+      ${!mod.active ? '<span class="meta-chip" style="color:var(--rose)">&#9724; Stopped</span>' : ''}
     `;
 
-    // Body Î“Ã‡Ã¶ stacks and tasks
+    // Body — stacks and tasks
     const body = document.getElementById('module-detail-body');
     body.innerHTML = '';
 
@@ -156,8 +156,8 @@ const Modals = (() => {
         <div class="stack-header">
           <span class="stack-name-label">${UI.escHtml(stack.name)}</span>
           <div style="display:flex;gap:6px">
-            <button class="icon-btn" style="font-size:13px;color:var(--text-muted)" data-edit-stack="${stack.id}">Î“Â£Ã…âˆ©â••Ã…</button>
-            <button class="icon-btn" style="font-size:13px;color:var(--rose)" data-delete-stack="${stack.id}">â‰¡Æ’Ã¹Ã¦</button>
+            <button class="icon-btn" style="font-size:13px;color:var(--text-muted)" data-edit-stack="${stack.id}">&#9998;</button>
+            <button class="icon-btn" style="font-size:13px;color:var(--rose)" data-delete-stack="${stack.id}">&#10005;</button>
           </div>
         </div>
       `;
@@ -193,7 +193,7 @@ const Modals = (() => {
     if (stacks.length === 0 && standaloneTasks.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'empty-state';
-      empty.innerHTML = '<div class="empty-icon">â‰¡Æ’Ã´Â¡</div><p>No stacks or tasks yet.<br>Add some below!</p>';
+      empty.innerHTML = '<div class="empty-icon">&#128225;</div><p>No stacks or tasks yet.<br>Add some below!</p>';
       body.appendChild(empty);
     }
 
@@ -223,9 +223,9 @@ const Modals = (() => {
       ${rankDisplay !== null ? `<span class="subtask-rank">${rankDisplay}.</span>` : ''}
       <span class="subtask-name">${UI.escHtml(task.name)}</span>
       ${task.type === 'measure' && task.measureValue !== null ? `<span class="measure-value-badge">${task.measureValue}${task.measureLabel ? ' ' + task.measureLabel : ''}</span>` : ''}
-      ${task.type === 'measure' ? `<button class="icon-btn" style="font-size:13px;color:var(--purple)" data-task-measure="${task.id}" data-unit="${UI.escHtml(task.measureLabel)}">â‰¡Æ’Ã´Ã…</button>` : ''}
-      <button class="subtask-edit-btn" data-edit-task="${task.id}">Î“Â£Ã…âˆ©â••Ã…</button>
-      <button class="icon-btn" style="font-size:12px;color:var(--rose);opacity:0.6" data-delete-task="${task.id}">Î“Â£Ã²</button>
+      ${task.type === 'measure' ? `<button class="icon-btn" style="font-size:13px;color:var(--purple)" data-task-measure="${task.id}" data-unit="${UI.escHtml(task.measureLabel)}">&#128207;</button>` : ''}
+      <button class="subtask-edit-btn" data-edit-task="${task.id}">&#9998;</button>
+      <button class="icon-btn" style="font-size:12px;color:var(--rose);opacity:0.6" data-delete-task="${task.id}">&#10005;</button>
     `;
 
     // Check toggle
@@ -337,7 +337,7 @@ const Modals = (() => {
 
     // Populate stack select
     const stackSel = document.getElementById('task-stack');
-    stackSel.innerHTML = '<option value="">Î“Ã‡Ã¶ No Stack (standalone in module) Î“Ã‡Ã¶</option>';
+    stackSel.innerHTML = '<option value="">— No Stack (standalone in module) —</option>';
     if (modId) {
       const stacks = DB.getStacksByModule(modId);
       stacks.forEach(s => {
@@ -428,7 +428,7 @@ const Modals = (() => {
   const openQuickAdd = () => openModal('modal-quick-add');
 
   // ============================================================
-  // INIT Î“Ã‡Ã¶ bind all modal events
+  // INIT — bind all modal events
   // ============================================================
   const init = () => {
     // Backdrop / close buttons
@@ -448,7 +448,7 @@ const Modals = (() => {
       });
     });
 
-    // Freq select Î“Ã‡Ã¶ show/hide weekday selector
+    // Freq select — show/hide weekday selector
     document.getElementById('mod-freq').addEventListener('change', (e) => {
       toggleWeekdayVisibility(e.target.value);
     });
@@ -480,7 +480,7 @@ const Modals = (() => {
       toggleMeasureLabelVisibility(e.target.value);
     });
 
-    // Measure label Î“Ã¥Ã† sync to goal unit label
+    // Measure label -> sync to goal unit label
     document.getElementById('task-measure-label').addEventListener('input', (e) => {
       document.getElementById('task-goal-unit-label').textContent = e.target.value;
     });
@@ -501,7 +501,7 @@ const Modals = (() => {
     // Measure save
     document.getElementById('measure-save-btn').addEventListener('click', saveMeasure);
 
-    // Module detail Î“Ã‡Ã¶ edit / add stack / add task buttons
+    // Module detail — edit / add stack / add task buttons
     document.getElementById('module-detail-edit-btn').addEventListener('click', () => {
       openEditModule(UI.state.activeModuleId);
     });
@@ -537,4 +537,3 @@ const Modals = (() => {
     closeModal, openModal,
   };
 })();
-
