@@ -1,5 +1,5 @@
-/**
- * scheduler.js — Handles module recurrence logic
+﻿/**
+ * scheduler.js ΓÇö Handles module recurrence logic
  *
  * Determines which modules should be "active" today (i.e., visible as Today items),
  * which are Future, and handles auto-close triggering + run record creation.
@@ -292,7 +292,7 @@ const Scheduler = (() => {
 
 
   /**
-   * processPendingResets — called on app load and every minute.
+   * processPendingResets ΓÇö called on app load and every minute.
    *
    * Fixes the rollover gap: for repeating modules, `classifyModules` always
    * shows the NEXT upcoming occurrence, so once a weekly/monthly deadline
@@ -310,7 +310,7 @@ const Scheduler = (() => {
       const allDates = allOccurrencesDates(mod);
       if (!allDates.length) return;
 
-      // Walk backwards — find the most recent past occurrence whose deadline has passed
+      // Walk backwards ΓÇö find the most recent past occurrence whose deadline has passed
       for (let i = allDates.length - 1; i >= 0; i--) {
         const occStr    = allDates[i];
         const occDate   = parseDate(occStr);
@@ -318,7 +318,7 @@ const Scheduler = (() => {
 
         if (now <= deadline) continue; // Deadline not yet reached for this occurrence
 
-        // Deadline has passed — check if we already have a run for this occurrence
+        // Deadline has passed ΓÇö check if we already have a run for this occurrence
         const runs = DB.getRunsByModule(mod.id);
         const alreadyClosed = runs.some(r => r.occurrenceDate === occStr);
 
@@ -339,10 +339,10 @@ const Scheduler = (() => {
       case 'weekly': {
         if (mod.weekdays && mod.weekdays.length > 0) {
           const names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-          return 'Weekly · ' + mod.weekdays.map(d => names[d]).join(', ');
+          return 'Weekly ┬╖ ' + mod.weekdays.map(d => names[d]).join(', ');
         }
         const start = parseDate(mod.startDate);
-        return start ? 'Weekly · ' + dayName(start) : 'Weekly';
+        return start ? 'Weekly ┬╖ ' + dayName(start) : 'Weekly';
       }
       case 'biweekly': return 'Bi-weekly';
       case 'monthly':  return 'Monthly';
@@ -360,7 +360,7 @@ const Scheduler = (() => {
     if (diff === 1) return 'Tomorrow';
     if (diff === -1) return 'Yesterday';
     if (diff < 0) return `${Math.abs(diff)}d ago`;
-    if (diff < 7) return `In ${diff}d · ${d.toLocaleDateString('en-CA', { weekday: 'short' })}`;
+    if (diff < 7) return `In ${diff}d ┬╖ ${d.toLocaleDateString('en-CA', { weekday: 'short' })}`;
     return d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' });
   };
 
