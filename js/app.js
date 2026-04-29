@@ -1,5 +1,5 @@
-﻿/**
- * app.js ΓÇö Main app bootstrap and global refresh coordinator
+/**
+ * app.js Î“Ã‡Ã¶ Main app bootstrap and global refresh coordinator
  */
 
 'use strict';
@@ -38,7 +38,7 @@ const App = (() => {
     const modules = DB.getModules().sort((a, b) => a.name.localeCompare(b.name));
 
     if (!modules.length) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">≡ƒôª</div><p>No modules yet.<br>Tap + to create your first one!</p></div>';
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">â‰¡Æ’Ã´Âª</div><p>No modules yet.<br>Tap + to create your first one!</p></div>';
       return;
     }
 
@@ -52,7 +52,7 @@ const App = (() => {
         <div class="all-module-row-accent" style="background:${mod.colour}"></div>
         <div class="all-module-row-info">
           <div class="all-module-row-name">${UI.escHtml(mod.name)}</div>
-          <div class="all-module-row-meta">${Scheduler.freqLabel(mod)} ┬╖ ${stacks.length} stack${stacks.length !== 1 ? 's' : ''} ┬╖ ${stats.total} task${stats.total !== 1 ? 's' : ''}</div>
+          <div class="all-module-row-meta">${Scheduler.freqLabel(mod)} â”¬â•– ${stacks.length} stack${stacks.length !== 1 ? 's' : ''} â”¬â•– ${stats.total} task${stats.total !== 1 ? 's' : ''}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           ${!mod.active ? '<span style="font-size:10px;padding:2px 8px;background:var(--rose-dim);color:var(--rose);border-radius:999px;">Stopped</span>' : ''}
@@ -74,12 +74,7 @@ const App = (() => {
     // Wire up modals
     Modals.init();
 
-    // Navigation ΓÇö bottom nav
-    document.querySelectorAll('.bottom-nav-item').forEach(btn => {
-      btn.addEventListener('click', () => UI.navigateTo(btn.dataset.page));
-    });
-
-    // Navigation ΓÇö drawer
+    // Navigation â€” drawer
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', () => {
         UI.navigateTo(btn.dataset.page);
@@ -91,6 +86,7 @@ const App = (() => {
     document.getElementById('menu-btn').addEventListener('click', UI.openDrawer);
     document.getElementById('drawer-close').addEventListener('click', UI.closeDrawer);
     document.getElementById('drawer-overlay').addEventListener('click', UI.closeDrawer);
+    document.getElementById('settings-btn').addEventListener('click', () => UI.navigateTo('settings'));
 
     // View mode segmented toggle
     document.querySelectorAll('.vtog-btn').forEach(btn => {
@@ -112,7 +108,7 @@ const App = (() => {
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
       a.href = url;
-      a.download = `pyro-lagoon-${DB.todayStr()}.json`;
+      a.download = `tracker-keeper-${DB.todayStr()}.json`;
       a.click();
       URL.revokeObjectURL(url);
       UI.toast('Data exported!');
@@ -130,7 +126,7 @@ const App = (() => {
         if (!ok) return;
         const success = DB.importData(ev.target.result);
         if (success) { UI.toast('Data imported!'); refreshAll(); }
-        else UI.toast('Import failed ΓÇö invalid file');
+        else UI.toast('Import failed Î“Ã‡Ã¶ invalid file');
       };
       reader.readAsText(file);
       e.target.value = '';
@@ -157,6 +153,17 @@ const App = (() => {
       History.render();
     });
 
+    // Theme toggle
+    const savedTheme = localStorage.getItem('tk-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.checked = savedTheme === 'light';
+    themeToggle.addEventListener('change', (e) => {
+      const theme = e.target.checked ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('tk-theme', theme);
+    });
+
     // Run reset check on load, when returning to the app, and hourly as a fallback
     const runResets = () => {
       Scheduler.processPendingResets();
@@ -180,3 +187,4 @@ const App = (() => {
 
 // Boot
 document.addEventListener('DOMContentLoaded', App.init);
+

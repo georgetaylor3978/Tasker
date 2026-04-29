@@ -1,12 +1,12 @@
 ﻿/**
- * db.js ΓÇö Data layer for Pyro Lagoon
+ * db.js — Data layer for Pyro Lagoon
  * All data persisted to localStorage as JSON.
  *
  * Data model:
- *   modules[]   ΓÇö Module objects
- *   stacks[]    ΓÇö Stack objects (linked to a module)
- *   tasks[]     ΓÇö Task/subtask objects (linked to stack and/or module)
- *   runs[]      ΓÇö Historical run records (snapshots when a module closes)
+ *   modules[]   — Module objects
+ *   stacks[]    — Stack objects (linked to a module)
+ *   tasks[]     — Task/subtask objects (linked to stack and/or module)
+ *   runs[]      — Historical run records (snapshots when a module closes)
  */
 
 'use strict';
@@ -277,3 +277,4 @@ const DB = (() => {
     migrateData, uid,
   };
 })();
+

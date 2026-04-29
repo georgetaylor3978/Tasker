@@ -218,6 +218,7 @@ const Dashboard = (() => {
       </div>
       ${task.type === 'measure' ? `<button class="icon-btn" data-measure-task="${task.id}" style="color:var(--purple);font-size:14px">📏</button>` : ''}
       <button class="icon-btn" data-edit-standalone="${task.id}" style="color:var(--text-muted);font-size:13px">✏️</button>
+      <button class="icon-btn" data-delete-standalone="${task.id}" style="color:var(--rose);font-size:13px;opacity:0.7">✕</button>
     `;
     card.querySelector('[data-standalone-check]').addEventListener('click', () => {
       if (task.type === 'measure') {
@@ -228,6 +229,13 @@ const Dashboard = (() => {
     if (mBtn) mBtn.addEventListener('click', () => Modals.openMeasure(task.id, task.measureLabel, task.measureValue, () => App.refreshDashboard()));
     const eBtn = card.querySelector('[data-edit-standalone]');
     if (eBtn) eBtn.addEventListener('click', () => Modals.openEditTask(task.id, null));
+    const dBtn = card.querySelector('[data-delete-standalone]');
+    if (dBtn) dBtn.addEventListener('click', async () => {
+      const ok = await UI.confirm('Delete Task', `Delete "${task.name}"?`);
+      if (!ok) return;
+      DB.deleteTask(task.id);
+      App.refreshDashboard();
+    });
     return card;
   };
 

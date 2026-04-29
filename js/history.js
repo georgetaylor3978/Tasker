@@ -1,5 +1,5 @@
 ﻿/**
- * history.js ΓÇö History analysis and run log
+ * history.js Î“Ã‡Ã¶ History analysis and run log
  * Shows per-module analysis (7d / 30d) + task breakdown + deletable run log.
  */
 
@@ -82,7 +82,7 @@ const History = (() => {
 
     const hasRuns = modules.some(m => allRuns.some(r => r.moduleId === m.id));
     if (!modules.length || !hasRuns) {
-      container.innerHTML = '<div class="dash-none-msg">No history yet ΓÇö complete a module to start tracking.</div>';
+      container.innerHTML = '<div class="dash-none-msg">No history yet Î“Ã‡Ã¶ complete a module to start tracking.</div>';
       return;
     }
 
@@ -114,14 +114,14 @@ const History = (() => {
           <div class="history-period-col">
             <div class="history-period-label">7 Days</div>
             <div class="history-period-stat" style="color:${avgPct7 != null ? UI.pctColor(avgPct7) : 'var(--text-muted)'}">
-              ${avgPct7 != null ? avgPct7 + '%' : 'ΓÇö'}
+              ${avgPct7 != null ? avgPct7 + '%' : 'Î“Ã‡Ã¶'}
             </div>
             <div class="history-period-sub">${runs7.length}/${exp7} runs</div>
           </div>
           <div class="history-period-col">
             <div class="history-period-label">30 Days</div>
             <div class="history-period-stat" style="color:${avgPct30 != null ? UI.pctColor(avgPct30) : 'var(--text-muted)'}">
-              ${avgPct30 != null ? avgPct30 + '%' : 'ΓÇö'}
+              ${avgPct30 != null ? avgPct30 + '%' : 'Î“Ã‡Ã¶'}
             </div>
             <div class="history-period-sub">${runs30.length}/${exp30} runs</div>
           </div>
@@ -161,15 +161,15 @@ const History = (() => {
       const row = document.createElement('div');
       row.className = 'history-task-row';
 
-      let stats7 = 'ΓÇö', stats30 = 'ΓÇö';
+      let stats7 = 'Î“Ã‡Ã¶', stats30 = 'Î“Ã‡Ã¶';
 
       if (task.type === 'yesno') {
         const done7  = task.r7.filter(r => r.status).length;
         const done30 = task.r30.filter(r => r.status).length;
         const pct7   = task.r7.length  ? Math.round(done7  / task.r7.length  * 100) : null;
         const pct30  = task.r30.length ? Math.round(done30 / task.r30.length * 100) : null;
-        stats7  = task.r7.length  ? `${done7}/${task.r7.length} <span style="color:${UI.pctColor(pct7)}">(${pct7}%)</span>` : 'ΓÇö';
-        stats30 = task.r30.length ? `${done30}/${task.r30.length} <span style="color:${UI.pctColor(pct30)}">(${pct30}%)</span>` : 'ΓÇö';
+        stats7  = task.r7.length  ? `${done7}/${task.r7.length} <span style="color:${UI.pctColor(pct7)}">(${pct7}%)</span>` : 'Î“Ã‡Ã¶';
+        stats30 = task.r30.length ? `${done30}/${task.r30.length} <span style="color:${UI.pctColor(pct30)}">(${pct30}%)</span>` : 'Î“Ã‡Ã¶';
       } else {
         const vals7  = task.r7.map(r => r.actualValue).filter(v => v != null);
         const vals30 = task.r30.map(r => r.actualValue).filter(v => v != null);
@@ -182,21 +182,21 @@ const History = (() => {
           const cum30  = vals30.length ? vals30.reduce((a, v) => a + v, 0).toFixed(1) : null;
           const goal7  = (task.goalAmount * Math.max(task.r7.length,  1)).toFixed(1);
           const goal30 = (task.goalAmount * Math.max(task.r30.length, 1)).toFixed(1);
-          stats7  = avg7  != null ? `avg ${avg7}${unit} ┬╖ ${cum7}/${goal7}${unit}` : 'ΓÇö';
-          stats30 = avg30 != null ? `avg ${avg30}${unit} ┬╖ ${cum30}/${goal30}${unit}` : 'ΓÇö';
+          stats7  = avg7  != null ? `avg ${avg7}${unit} â”¬â•– ${cum7}/${goal7}${unit}` : 'Î“Ã‡Ã¶';
+          stats30 = avg30 != null ? `avg ${avg30}${unit} â”¬â•– ${cum30}/${goal30}${unit}` : 'Î“Ã‡Ã¶';
         } else {
-          stats7  = avg7  != null ? `avg ${avg7}${unit}` : 'ΓÇö';
-          stats30 = avg30 != null ? `avg ${avg30}${unit}` : 'ΓÇö';
+          stats7  = avg7  != null ? `avg ${avg7}${unit}` : 'â€”';
+          stats30 = avg30 != null ? `avg ${avg30}${unit}` : 'â€”';
         }
       }
 
-      const icon = task.type === 'measure' ? '≡ƒôÅ' : 'Γ£ô';
+      const icon = task.type === 'measure' ? 'ðŸ“…' : 'âœ…';
       row.innerHTML = `
         <span class="history-task-icon">${icon}</span>
         <span class="history-task-name">${UI.escHtml(task.taskName)}</span>
         <div class="history-task-stats">
-          <span class="history-stat-pill">7d: ${stats7}</span>
-          <span class="history-stat-pill">30d: ${stats30}</span>
+          <span class="history-stat-pill">${stats7}</span>
+          <span class="history-stat-pill">${stats30}</span>
         </div>
       `;
       wrapper.appendChild(row);
@@ -227,10 +227,10 @@ const History = (() => {
       row.innerHTML = `
         <div class="run-log-info">
           <div class="run-log-name">${UI.escHtml(run.moduleName)}</div>
-          <div class="run-log-date">${run.occurrenceDate || run.closedAt?.slice(0,10)} ┬╖ ${run.completedTasks}/${run.totalTasks} tasks</div>
+          <div class="run-log-date">${run.occurrenceDate || run.closedAt?.slice(0,10)} â”¬â•– ${run.completedTasks}/${run.totalTasks} tasks</div>
         </div>
         <span class="run-log-pct" style="color:${pctClr}">${run.pct}%</span>
-        <button class="icon-btn run-log-del" title="Delete this record" style="color:var(--rose);font-size:15px">≡ƒùæ</button>
+        <button class="icon-btn run-log-del" title="Delete this record" style="color:var(--rose);font-size:15px">â‰¡Æ’Ã¹Ã¦</button>
       `;
       row.querySelector('.run-log-del').addEventListener('click', async () => {
         const ok = await UI.confirm('Delete Record', `Delete this run record for "${run.moduleName}"? This cannot be undone.`);
@@ -245,3 +245,4 @@ const History = (() => {
 
   return { render, renderHistory };
 })();
+
