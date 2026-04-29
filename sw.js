@@ -1,9 +1,9 @@
-/**
- * Service Worker for Pyro Lagoon
+﻿/**
+ * Service Worker for Tracker Keeper
  * Caches all app assets for offline use.
  */
 
-const CACHE_NAME = 'pyro-lagoon-v1';
+const CACHE_NAME = 'tracker-keeper-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -42,3 +42,4 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+

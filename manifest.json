@@ -1,6 +1,6 @@
-{
-  "name": "Pyro Lagoon",
-  "short_name": "Pyro",
+﻿{
+  "name": "Tracker Keeper",
+  "short_name": "TK",
   "description": "Personal task, habit stack, and module tracker",
   "start_url": "./index.html",
   "display": "standalone",
@@ -20,3 +20,4 @@
     }
   ]
 }
+
