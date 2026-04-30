@@ -1,4 +1,4 @@
-﻿/**
+/**
  * scheduler.js — Handles module recurrence logic
  *
  * Determines which modules should be "active" today (i.e., visible as Today items),
@@ -179,8 +179,22 @@ const Scheduler = (() => {
       const occ = nextOccurrence(mod, t);
 
       if (!occ) {
-        // Past one-time or no more occurrences
+        // Past one-time or no more occurrences — but check autoclose window
         const stats = DB.getModuleCompletionStats(mod.id);
+
+        if (mod.freq === 'once' && mod.autoclose > 0) {
+          // One-time module with an autoclose window — check if still within it
+          const deadline = autocloseDeadline(mod, start);
+          const now = new Date();
+          const allDone = stats.total > 0 && stats.done === stats.total;
+
+          if (!allDone && now <= deadline) {
+            // Still within autoclose window and not fully done — show as active
+            todayItems.push({ module: mod, occurrenceDate: mod.startDate, deadline, pct: stats.pct });
+            continue;
+          }
+        }
+
         completeItems.push({ module: mod, occurrenceDate: mod.startDate, pct: stats.pct });
         continue;
       }
