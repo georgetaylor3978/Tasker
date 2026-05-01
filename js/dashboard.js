@@ -231,8 +231,10 @@ const Dashboard = (() => {
     if (eBtn) eBtn.addEventListener('click', () => Modals.openEditTask(task.id, null));
     const dBtn = card.querySelector('[data-delete-standalone]');
     if (dBtn) dBtn.addEventListener('click', async () => {
-      const ok = await UI.confirm('Delete Task', `Delete "${task.name}"?`);
-      if (!ok) return;
+      if (!task.status) {
+        const ok = await UI.confirm('Delete Task', `Delete "${task.name}"?`);
+        if (!ok) return;
+      }
       DB.deleteTask(task.id);
       App.refreshDashboard();
     });

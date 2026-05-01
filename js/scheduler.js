@@ -209,8 +209,8 @@ const Scheduler = (() => {
       // Check if all tasks are already done (module self-completes)
       const allDone = stats.total > 0 && stats.done === stats.total;
 
-      // Auto-close check
-      const autoCloseTriggered = now > deadline;
+      // Auto-close check (99 = never auto-close)
+      const autoCloseTriggered = mod.autoclose !== 99 && now > deadline;
 
       if (allDone || autoCloseTriggered) {
         completeItems.push({
@@ -297,7 +297,10 @@ const Scheduler = (() => {
     const completedTasks = tasks.filter(t => t.status).length;
     const dateForRun     = occurrenceDateStr || fmtDate(today());
 
-    DB.addRun(mod.id, mod.name, totalTasks, completedTasks, dateForRun, taskRecords);
+    // Only record history if noHistory is not enabled
+    if (!mod.noHistory) {
+      DB.addRun(mod.id, mod.name, totalTasks, completedTasks, dateForRun, taskRecords);
+    }
 
     if (mod.freq !== 'once' && mod.active) {
       tasks.forEach(t => DB.updateTask(t.id, { status: false, measureValue: null }));
@@ -317,7 +320,8 @@ const Scheduler = (() => {
    */
   const processPendingResets = () => {
     const now     = new Date();
-    const modules = DB.getModules().filter(m => m.active && m.freq !== 'once');
+    // Skip one-time and modules with autoclose=99 (never auto-close)
+    const modules = DB.getModules().filter(m => m.active && m.freq !== 'once' && m.autoclose !== 99);
 
     modules.forEach(mod => {
       // All past occurrence dates up to and including today

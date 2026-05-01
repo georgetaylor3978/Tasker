@@ -85,6 +85,10 @@
             <option value="">All Modules</option>
           </select>
         </div>
+        <div id="history-hidden-banner" class="hidden" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--text-secondary);cursor:pointer">
+          <span>&#9432; Some modules have history recording disabled.</span>
+          <div id="history-hidden-list" class="hidden" style="margin-top:6px;font-size:12px;color:var(--text-muted)"></div>
+        </div>
         <div id="history-analysis">
           <!-- Analysis cards rendered here -->
         </div>
@@ -224,14 +228,30 @@
           <input type="date" id="mod-start-date" />
         </div>
         <div class="form-group">
-          <label>Auto-close (days after date, 0 = end of day)</label>
-          <input type="number" id="mod-autoclose" min="0" max="30" value="0" />
+          <label>Auto-close</label>
+          <select id="mod-autoclose">
+            <option value="0">End of day</option>
+            <option value="1">+1 day</option>
+            <option value="2">+2 days</option>
+            <option value="3">+3 days</option>
+            <option value="7">+7 days</option>
+            <option value="14">+14 days</option>
+            <option value="30">+30 days</option>
+            <option value="99">Never (manual only)</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Status</label>
           <label class="toggle-row">
             <input type="checkbox" id="mod-active" checked />
             <span class="toggle-label" id="mod-active-label">Active (repeating)</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Track History</label>
+          <label class="toggle-row">
+            <input type="checkbox" id="mod-no-history" />
+            <span class="toggle-label" id="mod-no-history-label">No history (skip recording)</span>
           </label>
         </div>
       </div>

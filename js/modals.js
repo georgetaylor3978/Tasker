@@ -47,6 +47,7 @@ const Modals = (() => {
     document.getElementById('mod-start-date').value  = mod ? mod.startDate : DB.todayStr();
     document.getElementById('mod-autoclose').value   = mod ? mod.autoclose : 0;
     document.getElementById('mod-active').checked    = mod ? mod.active : true;
+    document.getElementById('mod-no-history').checked = mod ? !!mod.noHistory : false;
 
     // Time picker
     const hasTime = mod && mod.startTime;
@@ -81,11 +82,12 @@ const Modals = (() => {
     document.getElementById('mod-weekday-group').style.display = show ? '' : 'none';
   };
 
-  const saveModule = () => {
+  const saveModule = async () => {
     const name = document.getElementById('mod-name').value.trim();
     if (!name) { UI.toast('Please enter a module name'); return; }
 
     const isAllDay = document.getElementById('mod-allday-btn').classList.contains('active');
+    const newNoHistory = document.getElementById('mod-no-history').checked;
     const data = {
       name,
       description: document.getElementById('mod-desc').value.trim(),
@@ -94,9 +96,22 @@ const Modals = (() => {
       startDate:   document.getElementById('mod-start-date').value,
       autoclose:   parseInt(document.getElementById('mod-autoclose').value) || 0,
       active:      document.getElementById('mod-active').checked,
+      noHistory:   newNoHistory,
       weekdays:    selectedWeekdays,
       startTime:   isAllDay ? null : (document.getElementById('mod-start-time').value || null),
     };
+
+    // If toggling noHistory ON and module has existing history, prompt
+    if (editingModuleId && newNoHistory) {
+      const oldMod = DB.getModuleById(editingModuleId);
+      if (oldMod && !oldMod.noHistory) {
+        const runs = DB.getRunsByModule(editingModuleId);
+        if (runs.length > 0) {
+          const del = await UI.confirm('Delete History?', `This module has ${runs.length} history record(s). Delete them now? (Select No to keep them — you can delete later from Settings.)`);
+          if (del) DB.deleteRunsByModule(editingModuleId);
+        }
+      }
+    }
 
     if (editingModuleId) {
       DB.updateModule(editingModuleId, data);

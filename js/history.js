@@ -80,6 +80,23 @@ const History = (() => {
     let modules = DB.getModules().filter(m => m.freq !== 'once');
     if (filterModId) modules = modules.filter(m => m.id === filterModId);
 
+    // Separate hidden (noHistory) modules that still have data
+    const hiddenWithData = modules.filter(m => m.noHistory && allRuns.some(r => r.moduleId === m.id));
+    const banner = document.getElementById('history-hidden-banner');
+    const bannerList = document.getElementById('history-hidden-list');
+    if (banner && bannerList) {
+      if (hiddenWithData.length > 0) {
+        banner.classList.remove('hidden');
+        bannerList.innerHTML = hiddenWithData.map(m => `<div style="padding:2px 0">&bull; ${UI.escHtml(m.name)} (${allRuns.filter(r => r.moduleId === m.id).length} records)</div>`).join('');
+        banner.onclick = () => bannerList.classList.toggle('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    // Filter out noHistory modules from display
+    modules = modules.filter(m => !m.noHistory);
+
     const hasRuns = modules.some(m => allRuns.some(r => r.moduleId === m.id));
     if (!modules.length || !hasRuns) {
       container.innerHTML = '<div class="dash-none-msg">No history yet — complete a module to start tracking.</div>';
@@ -214,6 +231,9 @@ const History = (() => {
     const filterModId = document.getElementById('history-module-select')?.value || '';
     let runs = DB.getRuns().sort((a, b) => new Date(b.closedAt) - new Date(a.closedAt));
     if (filterModId) runs = runs.filter(r => r.moduleId === filterModId);
+    // Hide runs for noHistory modules
+    const hiddenModIds = new Set(DB.getModules().filter(m => m.noHistory).map(m => m.id));
+    runs = runs.filter(r => !hiddenModIds.has(r.moduleId));
 
     if (!runs.length) {
       container.innerHTML = '<div class="dash-none-msg">No run records yet.</div>';

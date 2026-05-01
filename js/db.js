@@ -1,4 +1,4 @@
-﻿/**
+/**
  * db.js — Data layer for Pyro Lagoon
  * All data persisted to localStorage as JSON.
  *
@@ -48,6 +48,7 @@ const DB = (() => {
       weekdays:    data.weekdays || [],
       autoclose:   data.autoclose ?? 0,
       active:      data.active ?? true,
+      noHistory:   data.noHistory ?? false,
       startTime:   data.startTime || null,
       createdAt:   now(),
       updatedAt:   now(),
@@ -228,6 +229,12 @@ const DB = (() => {
       taskRecords:    r.taskRecords    ?? [],
     }));
     saveRuns(runs);
+    // Migrate modules: add noHistory field
+    const modules = getModules().map(m => ({
+      ...m,
+      noHistory: m.noHistory ?? false,
+    }));
+    saveModules(modules);
   };
 
   // ---- Utility ----
