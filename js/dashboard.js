@@ -104,9 +104,11 @@ const Dashboard = (() => {
 
     const buildTasks = (moduleItems) => {
       const tasks = [];
-      sortByTime(moduleItems).forEach(({ module: mod, occurrenceDate }) => {
-        DB.getTasksByModule(mod.id).sort((a, b) => a.rank - b.rank)
-          .forEach(task => tasks.push({ task, module: mod, occurrenceDate }));
+      sortByTime(moduleItems)
+        .filter(({ module: mod }) => !mod.excludeFromTasks)
+        .forEach(({ module: mod, occurrenceDate }) => {
+          DB.getTasksByModule(mod.id).sort((a, b) => a.rank - b.rank)
+            .forEach(task => tasks.push({ task, module: mod, occurrenceDate }));
       });
       return tasks;
     };

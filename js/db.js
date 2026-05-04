@@ -48,8 +48,9 @@ const DB = (() => {
       weekdays:    data.weekdays || [],
       autoclose:   data.autoclose ?? 0,
       active:      data.active ?? true,
-      noHistory:   data.noHistory ?? false,
-      startTime:   data.startTime || null,
+      noHistory:        data.noHistory ?? false,
+      excludeFromTasks: data.excludeFromTasks ?? false,
+      startTime:        data.startTime || null,
       createdAt:   now(),
       updatedAt:   now(),
     };
@@ -232,7 +233,8 @@ const DB = (() => {
     // Migrate modules: add noHistory field
     const modules = getModules().map(m => ({
       ...m,
-      noHistory: m.noHistory ?? false,
+      noHistory:        m.noHistory ?? false,
+      excludeFromTasks: m.excludeFromTasks ?? false,
     }));
     saveModules(modules);
   };

@@ -48,6 +48,7 @@ const Modals = (() => {
     document.getElementById('mod-autoclose').value   = mod ? mod.autoclose : 0;
     document.getElementById('mod-active').checked    = mod ? mod.active : true;
     document.getElementById('mod-no-history').checked = mod ? !!mod.noHistory : false;
+    document.getElementById('mod-exclude-tasks').checked = mod ? !!mod.excludeFromTasks : false;
 
     // Time picker
     const hasTime = mod && mod.startTime;
@@ -96,7 +97,8 @@ const Modals = (() => {
       startDate:   document.getElementById('mod-start-date').value,
       autoclose:   parseInt(document.getElementById('mod-autoclose').value) || 0,
       active:      document.getElementById('mod-active').checked,
-      noHistory:   newNoHistory,
+      noHistory:        newNoHistory,
+      excludeFromTasks: document.getElementById('mod-exclude-tasks').checked,
       weekdays:    selectedWeekdays,
       startTime:   isAllDay ? null : (document.getElementById('mod-start-time').value || null),
     };
