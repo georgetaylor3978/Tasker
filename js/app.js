@@ -16,10 +16,11 @@ const App = (() => {
 
   const refreshPage = (page) => {
     switch (page) {
-      case 'dashboard': refreshDashboard(); break;
-      case 'modules':   renderModulesPage(); break;
-      case 'history':   History.render(); break;
-      case 'settings':  History.render(); break;
+      case 'dashboard':  refreshDashboard(); break;
+      case 'modules':    renderModulesPage(); break;
+      case 'categories': Categories.render(); break;
+      case 'history':    History.render(); break;
+      case 'settings':   History.render(); break;
     }
   };
 
@@ -73,6 +74,7 @@ const App = (() => {
 
     // Wire up modals
     Modals.init();
+    Categories.init();
 
     // Navigation — drawer
     document.querySelectorAll('.nav-item').forEach(btn => {
@@ -105,6 +107,12 @@ const App = (() => {
 
     // New module button (on modules page)
     document.getElementById('new-module-btn').addEventListener('click', () => Modals.openEditModule(null));
+
+    // Quick add — new category
+    document.getElementById('qa-category').addEventListener('click', () => {
+      Modals.closeModal('modal-quick-add');
+      Categories.openEditCategory(null);
+    });
 
     // History filter
     document.getElementById('history-module-select').addEventListener('change', () => History.renderHistory());

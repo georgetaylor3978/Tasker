@@ -14,10 +14,11 @@
 const DB = (() => {
 
   const KEYS = {
-    modules: 'pl_modules',
-    stacks:  'pl_stacks',
-    tasks:   'pl_tasks',
-    runs:    'pl_runs',
+    modules:    'pl_modules',
+    stacks:     'pl_stacks',
+    tasks:      'pl_tasks',
+    runs:       'pl_runs',
+    categories: 'pl_categories',
   };
 
   // ---- Low-level helpers ----
@@ -50,6 +51,7 @@ const DB = (() => {
       active:      data.active ?? true,
       noHistory:        data.noHistory ?? false,
       excludeFromTasks: data.excludeFromTasks ?? false,
+      categoryId:       data.categoryId || null,
       startTime:        data.startTime || null,
       createdAt:   now(),
       updatedAt:   now(),
@@ -235,6 +237,7 @@ const DB = (() => {
       ...m,
       noHistory:        m.noHistory ?? false,
       excludeFromTasks: m.excludeFromTasks ?? false,
+      categoryId:       m.categoryId ?? null,
     }));
     saveModules(modules);
   };
@@ -246,20 +249,22 @@ const DB = (() => {
   };
 
   const exportData = () => JSON.stringify({
-    modules: getModules(),
-    stacks:  getStacks(),
-    tasks:   getTasks(),
-    runs:    getRuns(),
+    modules:    getModules(),
+    stacks:     getStacks(),
+    tasks:      getTasks(),
+    runs:       getRuns(),
+    categories: getCategories(),
     exportedAt: now(),
   }, null, 2);
 
   const importData = (json) => {
     try {
       const d = JSON.parse(json);
-      if (d.modules) saveModules(d.modules);
-      if (d.stacks)  saveStacks(d.stacks);
-      if (d.tasks)   saveTasks(d.tasks);
-      if (d.runs)    saveRuns(d.runs);
+      if (d.modules)    saveModules(d.modules);
+      if (d.stacks)     saveStacks(d.stacks);
+      if (d.tasks)      saveTasks(d.tasks);
+      if (d.runs)       saveRuns(d.runs);
+      if (d.categories) saveCategories(d.categories);
       return true;
     } catch(e) { return false; }
   };
@@ -276,12 +281,51 @@ const DB = (() => {
     return { total, done, pct: total > 0 ? Math.round((done/total)*100) : 100 };
   };
 
+  // ---- Categories ----
+  const getCategories = () => load(KEYS.categories);
+  const saveCategories = (arr) => save(KEYS.categories, arr);
+
+  const addCategory = (data) => {
+    const cats = getCategories();
+    const c = {
+      id:          uid(),
+      name:        data.name || 'Untitled',
+      description: data.description || '',
+      colour:      data.colour || '#60a5fa',
+      notes:       data.notes || '',
+      createdAt:   now(),
+      updatedAt:   now(),
+    };
+    cats.push(c);
+    saveCategories(cats);
+    return c;
+  };
+
+  const updateCategory = (id, changes) => {
+    const cats = getCategories();
+    const idx = cats.findIndex(c => c.id === id);
+    if (idx === -1) return null;
+    cats[idx] = { ...cats[idx], ...changes, updatedAt: now() };
+    saveCategories(cats);
+    return cats[idx];
+  };
+
+  const deleteCategory = (id) => {
+    saveCategories(getCategories().filter(c => c.id !== id));
+    // Unlink modules from this category
+    const modules = getModules().map(m => m.categoryId === id ? { ...m, categoryId: null } : m);
+    saveModules(modules);
+  };
+
+  const getCategoryById = (id) => getCategories().find(c => c.id === id) || null;
+
   return {
     getModules, addModule, updateModule, deleteModule, getModuleById,
     getStacks, addStack, updateStack, deleteStack, getStacksByModule,
     getTasks, addTask, updateTask, deleteTask,
     getTasksByModule, getTasksByStack, getStandaloneTasks,
     getRuns, addRun, getRunsByModule, deleteRun, deleteRunsByModule, deleteAllRuns,
+    getCategories, addCategory, updateCategory, deleteCategory, getCategoryById,
     todayStr, exportData, importData, clearAll, getModuleCompletionStats,
     migrateData, uid,
   };

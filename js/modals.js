@@ -50,6 +50,17 @@ const Modals = (() => {
     document.getElementById('mod-no-history').checked = mod ? !!mod.noHistory : false;
     document.getElementById('mod-exclude-tasks').checked = mod ? !!mod.excludeFromTasks : false;
 
+    // Category dropdown
+    const catSel = document.getElementById('mod-category');
+    catSel.innerHTML = '<option value="">Other (none)</option>';
+    DB.getCategories().forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      if (mod && mod.categoryId === c.id) opt.selected = true;
+      catSel.appendChild(opt);
+    });
+
     // Time picker
     const hasTime = mod && mod.startTime;
     document.getElementById('mod-allday-btn').classList.toggle('active', !hasTime);
@@ -99,6 +110,7 @@ const Modals = (() => {
       active:      document.getElementById('mod-active').checked,
       noHistory:        newNoHistory,
       excludeFromTasks: document.getElementById('mod-exclude-tasks').checked,
+      categoryId:       document.getElementById('mod-category').value || null,
       weekdays:    selectedWeekdays,
       startTime:   isAllDay ? null : (document.getElementById('mod-start-time').value || null),
     };

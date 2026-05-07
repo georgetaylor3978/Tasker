@@ -48,9 +48,10 @@
         <button id="drawer-close" class="icon-btn">✕</button>
       </div>
       <ul id="drawer-nav">
-        <li><button class="nav-item active" data-page="dashboard">📋 Dashboard</button></li>
-        <li><button class="nav-item" data-page="modules">📦 Modules</button></li>
-        <li><button class="nav-item" data-page="history">📈 History</button></li>
+        <li><button class="nav-item active" data-page="dashboard">&#128203; Dashboard</button></li>
+        <li><button class="nav-item" data-page="modules">&#128230; Modules</button></li>
+        <li><button class="nav-item" data-page="categories">&#128193; Categories</button></li>
+        <li><button class="nav-item" data-page="history">&#128200; History</button></li>
       </ul>
     </nav>
 
@@ -73,6 +74,14 @@
         <div id="modules-list">
           <!-- Dynamically rendered -->
         </div>
+      </section>
+
+      <!-- CATEGORIES PAGE -->
+      <section id="page-categories" class="page">
+        <div class="page-header">
+          <h2>Categories</h2>
+        </div>
+        <div id="categories-list"></div>
       </section>
 
       <!-- HISTORY PAGE -->
@@ -190,6 +199,12 @@
         <div class="form-group">
           <label>Colour Tag</label>
           <div id="colour-picker" class="colour-picker-row"></div>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="mod-category">
+            <option value="">Other (none)</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Frequency</label>
@@ -353,9 +368,14 @@
             <span class="qa-sub">with stacks & tasks</span>
           </button>
           <button class="quick-add-card" id="qa-task">
-            <span class="qa-icon">✅</span>
+            <span class="qa-icon">&#10004;</span>
             <span class="qa-label">Standalone Task</span>
             <span class="qa-sub">not part of a module</span>
+          </button>
+          <button class="quick-add-card" id="qa-category">
+            <span class="qa-icon">&#128193;</span>
+            <span class="qa-label">New Category</span>
+            <span class="qa-sub">group modules together</span>
           </button>
         </div>
       </div>
@@ -391,12 +411,57 @@
     </div>
   </div>
 
+  <!-- Category Detail Modal -->
+  <div id="modal-category-detail" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-full">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">&#10005;</button>
+        <h2 id="category-detail-title">Category</h2>
+        <div></div>
+      </div>
+      <div id="category-detail-body" class="modal-scroll-body"></div>
+    </div>
+  </div>
+
+  <!-- Edit Category Modal -->
+  <div id="modal-edit-category" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel modal-sheet">
+      <div class="modal-header">
+        <button class="modal-close icon-btn">&#10005;</button>
+        <h2 id="edit-category-title">New Category</h2>
+        <button class="icon-btn accent-text" id="save-category-btn">Save</button>
+      </div>
+      <div class="modal-scroll-body">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="cat-name" placeholder="e.g. Health" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="cat-desc" placeholder="Optional description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Colour</label>
+          <div id="cat-colour-picker" class="colour-picker-row"></div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="cat-notes" placeholder="Optional notes..."></textarea>
+        </div>
+        <button class="danger-btn" id="delete-category-btn" style="margin-top:12px;display:none">Delete Category</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/db.js"></script>
   <script src="js/scheduler.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/modals.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/history.js"></script>
+  <script src="js/categories.js"></script>
   <script src="js/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
