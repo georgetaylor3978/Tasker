@@ -80,6 +80,9 @@ const Modals = (() => {
 
     openModal('modal-edit-module');
     // No autofocus — avoids keyboard popup on mobile
+
+    // Show delete only when editing an existing module
+    document.getElementById('delete-module-btn').style.display = isNew ? 'none' : '';
   };
 
   const renderWeekdayButtons = () => {
@@ -543,13 +546,14 @@ const Modals = (() => {
       openAddTask(UI.state.activeModuleId, null);
     });
 
-    // Delete module from detail view
+    // Delete module — in edit modal
     document.getElementById('delete-module-btn').addEventListener('click', async () => {
-      const mod = DB.getModuleById(UI.state.activeModuleId);
+      const mod = DB.getModuleById(editingModuleId);
       if (!mod) return;
       const ok = await UI.confirm('Delete Module', `Delete "${mod.name}" and all its tasks? This cannot be undone.`);
       if (!ok) return;
-      DB.deleteModule(UI.state.activeModuleId);
+      DB.deleteModule(editingModuleId);
+      closeModal('modal-edit-module');
       closeModal('modal-module-detail');
       UI.toast('Module deleted');
       App.refreshAll();
