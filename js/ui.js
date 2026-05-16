@@ -6,16 +6,17 @@
 
 const UI = (() => {
 
-  // Colour palette for module tags
+  // Colour palette for module tags — expanded with neutrals
   const COLOURS = [
     '#f97316', '#fb923c', '#fbbf24', '#34d399', '#60a5fa',
     '#a78bfa', '#f472b6', '#38bdf8', '#fb7185', '#4ade80',
+    '#e2e8f0', '#94a3b8', '#475569', '#1e293b', '#0f172a',
   ];
 
   // Current app state
   const state = {
     currentPage:    'dashboard',
-    viewMode:       'module', // 'module' | 'granular'
+    viewMode:       'module', // 'module' | 'granular' | 'category'
     activeModuleId: null,
   };
 
@@ -26,10 +27,6 @@ const UI = (() => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(`page-${page}`);
     if (target) target.classList.add('active');
-    // Bottom nav
-    document.querySelectorAll('.bottom-nav-item').forEach(b => {
-      b.classList.toggle('active', b.dataset.page === page);
-    });
     // Drawer nav items
     document.querySelectorAll('.nav-item').forEach(n => {
       n.classList.toggle('active', n.dataset.page === page);
@@ -46,12 +43,18 @@ const UI = (() => {
     App.refreshDashboard();
   };
 
+  // Toggle view mode — always navigates to dashboard first
   const toggleViewMode = (mode) => {
     state.viewMode = mode || (state.viewMode === 'module' ? 'granular' : 'module');
     document.querySelectorAll('.vtog-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === state.viewMode);
     });
-    App.refreshDashboard();
+    // Always show dashboard when toggling
+    if (state.currentPage !== 'dashboard') {
+      navigateTo('dashboard');
+    } else {
+      App.refreshDashboard();
+    }
   };
 
   // ---- Drawer ----
@@ -74,7 +77,11 @@ const UI = (() => {
       const swatch = document.createElement('button');
       swatch.className = 'colour-swatch' + (c === selected ? ' selected' : '');
       swatch.style.background = c;
+      swatch.dataset.colour = c;
       swatch.setAttribute('aria-label', c);
+      // Add border for light colours so they're visible
+      const isLight = ['#e2e8f0', '#94a3b8'].includes(c);
+      if (isLight) swatch.style.border = '1px solid var(--border)';
       swatch.addEventListener('click', () => {
         container.querySelectorAll('.colour-swatch').forEach(s => s.classList.remove('selected'));
         swatch.classList.add('selected');

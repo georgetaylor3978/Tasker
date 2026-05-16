@@ -79,7 +79,7 @@ const Modals = (() => {
     toggleWeekdayVisibility(document.getElementById('mod-freq').value);
 
     openModal('modal-edit-module');
-    setTimeout(() => document.getElementById('mod-name').focus(), 100);
+    // No autofocus — avoids keyboard popup on mobile
   };
 
   const renderWeekdayButtons = () => {
@@ -143,6 +143,8 @@ const Modals = (() => {
   // MODULE DETAIL MODAL
   // ============================================================
   const openModuleDetail = (moduleId) => {
+    // Close category detail if open (so module pops over it)
+    closeModal('modal-category-detail');
     UI.state.activeModuleId = moduleId;
     refreshModuleDetail(moduleId);
     openModal('modal-module-detail');
@@ -541,10 +543,49 @@ const Modals = (() => {
       openAddTask(UI.state.activeModuleId, null);
     });
 
+    // Delete module from detail view
+    document.getElementById('delete-module-btn').addEventListener('click', async () => {
+      const mod = DB.getModuleById(UI.state.activeModuleId);
+      if (!mod) return;
+      const ok = await UI.confirm('Delete Module', `Delete "${mod.name}" and all its tasks? This cannot be undone.`);
+      if (!ok) return;
+      DB.deleteModule(UI.state.activeModuleId);
+      closeModal('modal-module-detail');
+      UI.toast('Module deleted');
+      App.refreshAll();
+    });
+
     // Quick add cards
     document.getElementById('qa-module').addEventListener('click', () => {
       closeModal('modal-quick-add');
       openEditModule(null);
+    });
+    // Quick add — task to module (prompts module selection)
+    document.getElementById('qa-task-to-mod').addEventListener('click', () => {
+      closeModal('modal-quick-add');
+      const modules = DB.getModules();
+      if (!modules.length) { UI.toast('No modules yet — create one first'); return; }
+      // Populate module picker, show it, open task modal in module-mode
+      const modSel = document.getElementById('task-module-select');
+      modSel.innerHTML = '<option value="">— Select a Module —</option>';
+      modules.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id; opt.textContent = m.name;
+        modSel.appendChild(opt);
+      });
+      document.getElementById('task-module-group').style.display = '';
+      // When module changes, refresh stack list
+      modSel.onchange = () => {
+        const sid = modSel.value;
+        const stackSel = document.getElementById('task-stack');
+        stackSel.innerHTML = '<option value="">— No Stack —</option>';
+        if (sid) DB.getStacksByModule(sid).forEach(s => {
+          const o = document.createElement('option'); o.value = s.id; o.textContent = s.name;
+          stackSel.appendChild(o);
+        });
+        document.getElementById('modal-edit-task').dataset.moduleId = sid;
+      };
+      openAddTask(null, null);
     });
     document.getElementById('qa-task').addEventListener('click', () => {
       closeModal('modal-quick-add');

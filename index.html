@@ -32,6 +32,7 @@
         <div id="view-toggle" title="Toggle view">
           <button class="vtog-btn active" data-mode="module" id="vtog-mod">Mod</button>
           <button class="vtog-btn" data-mode="granular" id="vtog-task">Task</button>
+          <button class="vtog-btn" data-mode="category" id="vtog-cat">Cat</button>
         </div>
         <button id="settings-btn" class="icon-btn" aria-label="Settings" data-page="settings">
           <span class="icon">⚙️</span>
@@ -174,6 +175,7 @@
       <div class="modal-footer">
         <button class="secondary-btn" id="add-stack-btn">+ Add Stack</button>
         <button class="accent-btn" id="add-task-to-module-btn">+ Add Task</button>
+        <button class="danger-btn" id="delete-module-btn" style="margin-left:8px">Delete</button>
       </div>
     </div>
   </div>
@@ -338,6 +340,12 @@
             <span id="task-goal-unit-label" style="color:var(--text-muted);font-size:13px;min-width:30px"></span>
           </div>
         </div>
+        <div class="form-group" id="task-module-group" style="display:none">
+          <label>Module</label>
+          <select id="task-module-select">
+            <option value="">— Select a Module —</option>
+          </select>
+        </div>
         <div class="form-group" id="task-stack-group">
           <label>Parent Stack (optional)</label>
           <select id="task-stack">
@@ -362,21 +370,26 @@
       </div>
       <div class="modal-scroll-body">
         <div class="quick-add-options">
-          <button class="quick-add-card" id="qa-module">
-            <span class="qa-icon">📦</span>
-            <span class="qa-label">New Module</span>
-            <span class="qa-sub">with stacks & tasks</span>
-          </button>
-          <button class="quick-add-card" id="qa-task">
-            <span class="qa-icon">&#10004;</span>
-            <span class="qa-label">Standalone Task</span>
-            <span class="qa-sub">not part of a module</span>
-          </button>
-          <button class="quick-add-card" id="qa-category">
-            <span class="qa-icon">&#128193;</span>
-            <span class="qa-label">New Category</span>
-            <span class="qa-sub">group modules together</span>
-          </button>
+          <div class="qa-row">
+            <button class="quick-add-card" id="qa-module">
+              <span class="qa-icon">&#128230;</span>
+              <span class="qa-label">New Module</span>
+            </button>
+            <button class="quick-add-card" id="qa-category">
+              <span class="qa-icon">&#128193;</span>
+              <span class="qa-label">New Category</span>
+            </button>
+          </div>
+          <div class="qa-row">
+            <button class="quick-add-card" id="qa-task-to-mod">
+              <span class="qa-icon">&#10133;</span>
+              <span class="qa-label">Task to Mod</span>
+            </button>
+            <button class="quick-add-card" id="qa-task">
+              <span class="qa-icon">&#10004;</span>
+              <span class="qa-label">Quick Task</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

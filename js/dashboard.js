@@ -19,7 +19,9 @@ const Dashboard = (() => {
     const container = document.getElementById('dashboard-content');
     if (!container) return;
     container.innerHTML = '';
-    UI.state.viewMode === 'module' ? renderModuleView(container) : renderGranularView(container);
+    if (UI.state.viewMode === 'module')        renderModuleView(container);
+    else if (UI.state.viewMode === 'category') renderCategoryView(container);
+    else                                        renderGranularView(container);
   };
 
   // Sort module items: timed first (asc), all-day last, then alpha
@@ -262,6 +264,75 @@ const Dashboard = (() => {
     const mBtn = item.querySelector('[data-g-measure]');
     if (mBtn) mBtn.addEventListener('click', () => Modals.openMeasure(task.id, task.measureLabel, task.measureValue, () => App.refreshDashboard()));
     return item;
+  };
+
+  // ===========================================================
+  // CATEGORY VIEW — collapsible sections per category
+  // ===========================================================
+  const renderCategoryView = (container) => {
+    const allModules = DB.getModules();
+    const cats = DB.getCategories().sort((a, b) => a.name.localeCompare(b.name));
+
+    // Build groups: named categories + "Other"
+    const groups = [
+      ...cats.map(cat => ({
+        id: cat.id, name: cat.name, colour: cat.colour,
+        modules: allModules.filter(m => m.categoryId === cat.id),
+      })),
+      {
+        id: '__other__', name: 'Other', colour: '#4d546a',
+        modules: allModules.filter(m => !m.categoryId),
+      },
+    ].filter(g => g.modules.length > 0);
+
+    if (!groups.length) {
+      const el = document.createElement('div');
+      el.className = 'empty-state';
+      el.innerHTML = '<div class="empty-icon">&#128193;</div><p>No modules yet.<br>Tap + to add one!</p>';
+      container.appendChild(el);
+      return;
+    }
+
+    groups.forEach(group => {
+      const section = document.createElement('div');
+      section.className = 'cat-view-section';
+
+      const header = document.createElement('div');
+      header.className = 'cat-view-header';
+      header.innerHTML = `
+        <span class="cat-view-dot" style="background:${group.colour}"></span>
+        <span class="cat-view-name">${UI.escHtml(group.name)}</span>
+        <span class="cat-view-count">${group.modules.length}</span>
+        <span class="cat-view-chevron">&#9660;</span>
+      `;
+      section.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'cat-view-body';
+
+      group.modules.sort((a, b) => a.name.localeCompare(b.name)).forEach(mod => {
+        const classified = Scheduler.classifyModules();
+        const allItems = [...classified.today, ...classified.future, ...classified.complete];
+        const item = allItems.find(i => i.module.id === mod.id);
+        const section2 = item ? (
+          classified.today.includes(item) ? 'today' :
+          classified.complete.includes(item) ? 'complete' : 'future'
+        ) : 'future';
+        body.appendChild(buildModuleCard(item || { module: mod, pct: 0, occurrenceDate: mod.startDate }, section2));
+      });
+
+      section.appendChild(body);
+
+      // Collapse toggle
+      let collapsed = false;
+      header.addEventListener('click', () => {
+        collapsed = !collapsed;
+        body.style.display = collapsed ? 'none' : '';
+        header.querySelector('.cat-view-chevron').innerHTML = collapsed ? '&#9650;' : '&#9660;';
+      });
+
+      container.appendChild(section);
+    });
   };
 
   return { render };

@@ -1132,3 +1132,22 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
 .category-tile-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .category-tile-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 .category-edit-btn { flex-shrink: 0; }
+
+/* ---- Quick add row layout ---- */
+.quick-add-options { display: flex; flex-direction: column; gap: 10px; }
+.qa-row { display: flex; gap: 10px; }
+.qa-row .quick-add-card { flex: 1; }
+
+/* ---- Category dashboard view ---- */
+.cat-view-section { margin-bottom: 12px; }
+.cat-view-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: var(--bg-elevated);
+  border-radius: var(--r-md); border: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+}
+.cat-view-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-view-name { font-size: 14px; font-weight: 700; flex: 1; }
+.cat-view-count { font-size: 12px; color: var(--text-muted); background: var(--bg-card); padding: 2px 8px; border-radius: 999px; }
+.cat-view-chevron { font-size: 11px; color: var(--text-muted); }
+.cat-view-body { padding-top: 6px; }
